@@ -1,0 +1,10 @@
+# sbt building temporary files
+.bloop
+.metals
+.vscode
+project
+target
+
+# default rundir
+test_run_dir
+RTL
