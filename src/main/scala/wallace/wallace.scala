@@ -193,10 +193,10 @@ class Wallace1(m: Int, n: Int, myarch: List[Int], inedges: Map[List[Int], List[I
   io.addend := res1.reverse.reduce(Cat(_, _))
 }
 
-/*
+
 object test{
   val usage = """
-      Usage: readwt [--wallace-file filename1]
+      Usage: readwt [--wallace-file filename1] [--target-dir targetdir]
   """
   def main(args: Array[String]): Unit = {
     
@@ -208,6 +208,7 @@ object test{
     val argmap = (0 until arglist.size / 2).map(i => arglist(i * 2) -> arglist(i * 2 + 1)).toMap
 
     val filename1 = argmap("--wallace-file")
+    val targetdir = argmap("--target-dir")
 
     val filecontent = ReadWT.readFromWTTxt(filename1)
 
@@ -227,14 +228,14 @@ object test{
     val res = ReadWT.getRes(m, n, myarch)
 
     val topDesign = () => new Wallace(m, n, myarch, inedges, outedges, res)
-    chisel3.Driver.execute(Array("-td", "./RTL/wt"), topDesign)
-    iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
-      c => new WallaceTester(c)
-    }
+    chisel3.Driver.execute(Array("-td", targetdir), topDesign)
+    // iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
+    //   c => new WallaceTester(c)
+    // }
 
-    iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), () => new Wallace(m, n, myarch, inedges, outedges, res)) {
-      c => new WallaceTester(c)
-    }
+    // iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), () => new Wallace(m, n, myarch, inedges, outedges, res)) {
+    //   c => new WallaceTester(c)
+    // }
   }
 }
 
@@ -251,4 +252,4 @@ class WallaceTester(c: Wallace) extends PeekPokeTester(c) {
   println("The result of 5*2 with is: " + peek(c.io.augend).toString())
 
   expect(c.io.augend, 8)
-}*/
+}
