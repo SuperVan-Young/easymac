@@ -196,7 +196,7 @@ class Wallace1(m: Int, n: Int, myarch: List[Int], inedges: Map[List[Int], List[I
 
 object test{
   val usage = """
-      Usage: readwt [--wallace-file filename1] [--target-dir targetdir]
+      Usage: generate [--wallace-file filename1] [--target-dir targetdir]
   """
   def main(args: Array[String]): Unit = {
     

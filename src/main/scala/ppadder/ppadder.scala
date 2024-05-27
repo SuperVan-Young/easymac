@@ -84,10 +84,10 @@ class PPAdder(n: Int, myarch: List[Int], pedge: Map[List[Int], List[Int]], gedge
   io.outs := res.reverse.reduce(Cat(_, _))
 }
 
-/*
+
 object test{
   val usage = """
-      Usage: generate [--input1-bit input1] [--input2-bit input2] [--compressor-file filename1] [--prefix-adder-file filename2]
+      Usage: generate [--prefix-adder-file filename1] [--target-dir targetdir]
   """
   def main(args: Array[String]): Unit = {
     
@@ -101,6 +101,7 @@ object test{
     val argmap = (0 until arglist.size / 2).map(i => arglist(i * 2) -> arglist(i * 2 + 1)).toMap
 
     val filename1 = argmap("--prefix-adder-file")
+    val targetdir = argmap("--target-dir")
 
     val filecontent = ReadPPA.readFromPPATxt(filename1)
 
@@ -119,14 +120,14 @@ object test{
     val pos = ReadPPA.genFinal(n, myarch)
 
     val topDesign = () => new PPAdder(n, myarch, pedge, gedge, pos)
-    chisel3.Driver.execute(Array("-td", "./RTL/ppadder"), topDesign)
-    iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
-      c => new PPAdderTester(c)
-    }
+    chisel3.Driver.execute(Array("-td", targetdir), topDesign)
+    // iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
+    //   c => new PPAdderTester(c)
+    // }
 
-    iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), () => new PPAdder(n, myarch, pedge, gedge, pos)) {
-      c => new PPAdderTester(c)
-    }
+    // iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), () => new PPAdder(n, myarch, pedge, gedge, pos)) {
+    //   c => new PPAdderTester(c)
+    // }
   }
 }
 
@@ -141,4 +142,4 @@ class PPAdderTester(c: PPAdder) extends PeekPokeTester(c) {
   println("The result of 12 + 54 with is: " + peek(c.io.outs).toString())
 
   expect(c.io.outs, 66)
-}*/
+}
