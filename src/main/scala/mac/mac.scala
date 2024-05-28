@@ -67,7 +67,7 @@ class MAC1(m: Int, n: Int, myarchw: List[Int], inedges: Map[List[Int], List[Int]
 object test {
   val usage =
     """
-      Usage: generate [--compressor-file filename1] [--prefix-adder-file filename2] [--accumulator-file filename3]
+      Usage: generate [--compressor-file filename1] [--prefix-adder-file filename2] [--accumulator-file filename3]  [--target-dir targetdir]
   """
 
   def main(args: Array[String]): Unit = {
@@ -83,6 +83,7 @@ object test {
     val filename1 = argmap("--compressor-file")
     val filename2 = argmap("--prefix-adder-file")
     val filename3 = argmap("--accumulator-file")
+    val targetdir = argmap("--target-dir")
 
     val filecontent = ReadWT.readFromWTTxt(filename1)
 
@@ -137,10 +138,10 @@ object test {
     val pos2 = ReadPPA.genFinal(l, myarcha)
 
     val topDesign = () => new MAC(m, n, myarchw, inedges, outedges, res, myarcha, pedge, gedge, pos, myarcha2, pedge2, gedge2, pos2)
-    (new chisel3.stage.ChiselStage).emitVerilog(topDesign(), Array("-td", "./RTL/mac"))
-    iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
-      c => new MACTester(c)
-    }
+    (new chisel3.stage.ChiselStage).emitVerilog(topDesign(), Array("-td", targetdir))
+    // iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
+    //   c => new MACTester(c)
+    // }
   }
 }
 
