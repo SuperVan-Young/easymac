@@ -1,5 +1,7 @@
 package wallace
 
+import partialprod._
+
 import io._
 import chisel3.iotesters.PeekPokeTester
 import chisel3.util._
@@ -193,6 +195,26 @@ class Wallace1(m: Int, n: Int, myarch: List[Int], inedges: Map[List[Int], List[I
   io.addend := res1.reverse.reduce(Cat(_, _))
 }
 
+class PartialProdWallaceTree(m: Int, n: Int, myarch: List[Int], inedges: Map[List[Int], List[Int]], outedges: Map[List[Int], List[Int]], res: Map[Int, List[Int]]) extends Module {
+  val io = IO(new Bundle {
+    val multiplicand = Input(UInt(m.W))
+    val multiplier = Input(UInt(n.W))
+    val augend = Output(UInt((n + m).W))
+    val addend = Output(UInt((n + m).W))
+  })
+
+  val pp = Module(new PartialProd(m, n))
+  pp.io.multiplicand := io.multiplicand
+  pp.io.multiplier := io.multiplier
+
+  val wt = Module(new Wallace(m, n, myarch, inedges, outedges, res))
+  wt.io.pp := pp.io.outs
+
+  io.augend := wt.io.augend
+  io.addend := wt.io.addend
+}
+
+
 
 object test{
   val usage = """
@@ -227,7 +249,7 @@ object test{
 
     val res = ReadWT.getRes(m, n, myarch)
 
-    val topDesign = () => new Wallace(m, n, myarch, inedges, outedges, res)
+    val topDesign = () => new PartialProdWallaceTree(m, n, myarch, inedges, outedges, res)
     chisel3.Driver.execute(Array("-td", targetdir), topDesign)
     // iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
     //   c => new WallaceTester(c)

@@ -285,6 +285,8 @@ object ReadWT {
       compressorCount += List(col, 0) -> 0
       compressorCount += List(col, 1) -> 0
     }
+    initDots(n + m - 1) = 0
+    rowNumber += (n + m - 1) -> initDots(n + m - 1)
 
     // count the compressors in `myarch`
     for (i <- 0 until len) {
