@@ -65,6 +65,11 @@ object ReadWT {
       pos += i -> 0
       cnt(i) = 0
     }
+    // extend pos further
+    for (i <- (n + m) until (n + m + 16)) {
+      pos += i -> 0
+      cnt(i) = 0
+    }
 
     var depth = 0
     var ind = 500
@@ -218,6 +223,11 @@ object ReadWT {
       }
     }
 
+    // extend pos further
+    for (i <- 0 until 16) {
+      pos += (i + n + m) -> 1
+    }
+
     var depth = 0
     var ind = 500
     var i = 0
@@ -263,8 +273,8 @@ object ReadWT {
     var compressorCount = Map[List[Int], Int]() // compressor code -> the number of compressors
     var rowNumber = Map[Int, Int]() // column number -> current row number
 
-    var initDots = new Array[Int](m + n) // the initial dots in a trapezoidal shape
-    var compDots = new Array[Int](m + n) // the remaining dots after compression
+    var initDots = new Array[Int](m + n + 16) // the initial dots in a trapezoidal shape
+    var compDots = new Array[Int](m + n + 16) // the remaining dots after compression
 
     val diff = Math.abs(m - n)
     val min = Math.min(m, n)
@@ -287,6 +297,13 @@ object ReadWT {
     }
     initDots(n + m - 1) = 0
     rowNumber += (n + m - 1) -> initDots(n + m - 1)
+
+    for (col <- (n + m - 1) until (n + m + 16)) {
+      initDots(col) = 0
+      rowNumber += col -> initDots(col)
+      compressorCount += List(col, 0) -> 0
+      compressorCount += List(col, 1) -> 0
+    }
 
     // count the compressors in `myarch`
     for (i <- 0 until len) {
